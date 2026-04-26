@@ -10,7 +10,7 @@ export function Hero() {
       {/* Background Video with Cinematic Overlay */}
       <div className="absolute inset-0 z-0">
         <video
-          src="/videos/hero-video.mp4"
+          src="/videos/hero.webm"
           autoPlay
           muted
           loop
@@ -26,12 +26,12 @@ export function Hero() {
             <Sparkles size={12} className="text-primary" />
             AI-Powered Short Video Studio
           </div>
-          
+
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 leading-[1] animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            Create <span className="text-primary italic font-serif">Viral</span> <br /> 
+            Create <span className="text-primary italic font-serif">Viral</span> <br />
             Shorts in <span className="opacity-70">Seconds.</span>
           </h1>
-          
+
           <p className="text-lg md:text-xl text-foreground/80 mb-8 max-w-xl leading-relaxed animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
             Vibio uses state-of-the-art AI to transform your ideas, long videos, or scripts into engaging shorts for social media.
           </p>
