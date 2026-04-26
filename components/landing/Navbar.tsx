@@ -4,12 +4,14 @@ import * as React from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Moon, Sun, Menu, X, ArrowUpRight } from "lucide-react";
+import { UserButton, useAuth } from "@clerk/nextjs";
 
 export function Navbar() {
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const { userId, isLoaded } = useAuth();
 
   React.useEffect(() => {
     setMounted(true);
@@ -66,13 +68,36 @@ export function Navbar() {
               {theme === "dark" ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} className="text-slate-700" />}
             </button>
           )}
-          <Link
-            href="/signup"
-            className="group flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-foreground text-background rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all"
-          >
-            Create Video
-            <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </Link>
+
+          {isLoaded && !userId && (
+            <>
+              <Link
+                href="/sign-in"
+                className="text-sm font-semibold hover:text-primary transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/sign-up"
+                className="group flex items-center gap-2 px-5 py-2.5 text-sm font-semibold bg-foreground text-background rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all"
+              >
+                Create Video
+                <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </Link>
+            </>
+          )}
+
+          {isLoaded && userId && (
+            <>
+              <Link
+                href="/dashboard"
+                className="text-sm font-semibold hover:text-primary transition-colors"
+              >
+                Dashboard
+              </Link>
+              <UserButton />
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -93,7 +118,23 @@ export function Navbar() {
           <Link href="#features" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Product</Link>
           <Link href="#solutions" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Solutions</Link>
           <Link href="#pricing" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Pricing</Link>
-          <Link href="/signup" className="mt-4 px-6 py-4 text-center text-lg font-bold bg-foreground text-background rounded-2xl" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
+          
+          {isLoaded && !userId && (
+            <>
+              <Link href="/sign-in" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
+              <Link href="/sign-up" className="mt-4 px-6 py-4 text-center text-lg font-bold bg-foreground text-background rounded-2xl" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
+            </>
+          )}
+
+          {isLoaded && userId && (
+            <div className="flex flex-col gap-4 border-t border-border/50 pt-6">
+              <Link href="/dashboard" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link>
+              <div className="flex items-center justify-between">
+                <span className="text-xl font-bold">Profile</span>
+                <UserButton />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </header>
