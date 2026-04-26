@@ -46,10 +46,12 @@ export function Hero() {
                 className="bg-transparent border-none outline-none w-full text-base placeholder:text-muted-foreground/50"
               />
             </div>
-            <button className="bg-foreground text-background px-6 py-3.5 rounded-full font-bold text-sm flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
-              Generate
-              <ArrowRight size={16} />
-            </button>
+            <Link href="/sign-up">
+              <button className="bg-foreground text-background px-6 py-3.5 rounded-full font-bold text-sm flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                Generate
+                <ArrowRight size={16} />
+              </button>
+            </Link>
           </div>
 
           <div className="mt-12 flex items-center gap-8 animate-in fade-in duration-1000 delay-500">

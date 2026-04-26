@@ -17,17 +17,17 @@ export function Footer() {
       <div className="container mx-auto px-6 relative z-10">
         {/* Newsletter / CTA Section - Restored Premium Style */}
         <div className="bg-zinc-950 text-white rounded-[3rem] p-12 md:p-24 mb-32 flex flex-col items-center text-center relative overflow-hidden border border-white/5 shadow-2xl">
-          <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
+          <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
             <video
               src="/videos/hero-video.mp4"
               autoPlay
               muted
               loop
               playsInline
-              className="w-full h-full object-cover grayscale"
+              className="w-full h-full object-cover"
             />
           </div>
-          
+
           <div className="relative z-10 max-w-2xl">
             <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-8 font-serif italic">
               Join the future of <br /> content creation.
@@ -36,9 +36,9 @@ export function Footer() {
               Stay ahead of the curve with our latest AI video techniques and product updates.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-              <input 
-                type="email" 
-                placeholder="Enter your email" 
+              <input
+                type="email"
+                placeholder="Enter your email"
                 className="bg-white/5 border border-white/10 rounded-full px-8 py-4 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 w-full sm:w-80 backdrop-blur-md"
               />
               <button className="bg-white text-black px-10 py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
@@ -64,7 +64,7 @@ export function Footer() {
               <a href="#" className="hover:text-foreground transition-colors"><Code size={20} /></a>
             </div>
           </div>
-          
+
           <div className="md:col-span-2 md:offset-1">
             <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-muted-foreground">Product</h4>
             <ul className="space-y-4 text-sm font-medium">
@@ -74,7 +74,7 @@ export function Footer() {
               <li><Link href="#" className="hover:text-foreground transition-colors">Pricing</Link></li>
             </ul>
           </div>
-          
+
           <div className="md:col-span-2">
             <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-muted-foreground">Resources</h4>
             <ul className="space-y-4 text-sm font-medium">
@@ -84,7 +84,7 @@ export function Footer() {
               <li><Link href="#" className="hover:text-foreground transition-colors">Docs</Link></li>
             </ul>
           </div>
-          
+
           <div className="md:col-span-3">
             <h4 className="font-bold mb-6 text-sm uppercase tracking-widest text-muted-foreground">Social</h4>
             <ul className="space-y-4 text-sm font-medium">
