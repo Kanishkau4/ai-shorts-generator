@@ -27,9 +27,8 @@ export default function DashboardPage() {
   }, [user, supabase]);
 
   return (
-    <div className="p-8 pt-24">
+    <div>
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-      <p>Welcome, {user?.firstName}!</p>
       {/* ... your dashboard content */}
     </div>
   );
