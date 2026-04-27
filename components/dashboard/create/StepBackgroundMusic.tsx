@@ -87,14 +87,14 @@ export function StepBackgroundMusic({
     onNext({ backgroundMusic: selectedMusic });
   };
 
-  const isValid = selectedMusic.length > 0;
+  const isValid = true; // Background music is now optional
 
   return (
     <div className="flex flex-col gap-8">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Background Music</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Select one or more background music tracks for your videos. We'll pick from these randomly.
+          Select one or more background music tracks for your videos (optional). We&apos;ll pick from these randomly.
         </p>
       </div>
 
