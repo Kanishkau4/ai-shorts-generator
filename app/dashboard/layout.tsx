@@ -94,10 +94,13 @@ export default function DashboardLayout({
         {/* Sidebar Desktop */}
         <aside className="hidden md:flex w-64 flex-col border-r border-border/40 bg-background/50">
           <div className="p-4">
-            <button className="w-full flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 py-2.5 px-4 rounded-xl font-medium transition-all active:scale-[0.98]">
+            <Link
+              href="/dashboard/create"
+              className="w-full flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 py-2.5 px-4 rounded-xl font-medium transition-all active:scale-[0.98]"
+            >
               <Plus size={18} />
               Create New Series
-            </button>
+            </Link>
           </div>
 
           <div className="flex-1 overflow-y-auto py-2">
@@ -154,10 +157,14 @@ export default function DashboardLayout({
             />
             <aside className="fixed inset-y-0 left-0 z-40 w-64 border-r border-border/40 bg-background shadow-2xl animate-in slide-in-from-left-full duration-300 flex flex-col">
               <div className="p-4 mt-16">
-                <button className="w-full flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 py-2.5 px-4 rounded-xl font-medium transition-all active:scale-[0.98]">
+                <Link
+                  href="/dashboard/create"
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 py-2.5 px-4 rounded-xl font-medium transition-all active:scale-[0.98]"
+                >
                   <Plus size={18} />
                   Create New Series
-                </button>
+                </Link>
               </div>
 
               <div className="flex-1 overflow-y-auto py-2">
