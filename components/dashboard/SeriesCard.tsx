@@ -36,7 +36,7 @@ export type VideoSeries = {
 
 // ─── Niche → gradient / emoji map ───────────────────────────────────────────
 
-const NICHE_META: Record<string, { emoji: string; gradient: string }> = {
+export const NICHE_META: Record<string, { emoji: string; gradient: string }> = {
   "scary-stories":  { emoji: "👻", gradient: "from-violet-900 via-slate-900 to-zinc-900" },
   motivation:       { emoji: "🔥", gradient: "from-orange-600 via-red-700 to-rose-900" },
   "did-you-know":   { emoji: "🤯", gradient: "from-cyan-700 via-sky-800 to-indigo-900" },
@@ -51,7 +51,7 @@ const NICHE_META: Record<string, { emoji: string; gradient: string }> = {
   technology:       { emoji: "🤖", gradient: "from-blue-600 via-indigo-800 to-violet-900" },
 };
 
-function getNicheMeta(niche: string) {
+export function getNicheMeta(niche: string) {
   return NICHE_META[niche] ?? { emoji: "🎬", gradient: "from-slate-700 via-slate-800 to-zinc-900" };
 }
 

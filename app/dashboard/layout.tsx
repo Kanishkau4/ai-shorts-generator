@@ -22,7 +22,7 @@ import { useUser } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 
 const sidebarLinks = [
-  { name: "Series", href: "/dashboard/series", icon: LayoutDashboard },
+  { name: "Series", href: "/dashboard", icon: LayoutDashboard },
   { name: "Videos", href: "/dashboard/videos", icon: Video },
   { name: "Guides", href: "/dashboard/guides", icon: BookOpen },
   { name: "Billing", href: "/dashboard/billing", icon: CreditCard },
