@@ -1,7 +1,8 @@
 "use client";
 
-import { Clock, Play, Download, Trash2, Loader2, Image as ImageIcon } from "lucide-react";
+import { Clock, Play, Download, Trash2, Loader2, X } from "lucide-react";
 import { getNicheMeta } from "./SeriesCard";
+import { useState } from "react";
 import Image from "next/image";
 
 export type GeneratedVideo = {
@@ -42,6 +43,31 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
   const niche = video.video_series?.niche || "general";
   const { emoji, gradient } = getNicheMeta(niche);
 
+  const [showPlayer, setShowPlayer] = useState(false);
+
+  const handleDownload = async () => {
+    if (!video.video_url) return;
+
+    // For direct download, we can use an anchor tag with the download attribute.
+    // However, cross-origin URLs might just open in a new tab.
+    // To force download, we fetch the blob.
+    try {
+      const response = await fetch(video.video_url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${video.title.replace(/\s+/g, "_") || "ai-video"}.mp4`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Download failed", e);
+      window.open(video.video_url, "_blank");
+    }
+  };
+
   return (
     <div className="group relative flex flex-col rounded-2xl border border-border/50 bg-card/80 overflow-hidden shadow-sm hover:shadow-lg hover:border-border/80 transition-all duration-300 backdrop-blur-sm">
       {/* ── Thumbnail / Preview ────────────────────────────────────────── */}
@@ -55,7 +81,7 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-             <span className="text-6xl drop-shadow-2xl select-none opacity-50">
+            <span className="text-6xl drop-shadow-2xl select-none opacity-50">
               {emoji}
             </span>
           </div>
@@ -78,7 +104,10 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
         )}
 
         {video.video_url && !isProcessing && (
-          <button className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10">
+          <button
+            onClick={() => setShowPlayer(true)}
+            className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+          >
             <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center hover:scale-110 transition-transform">
               <Play size={24} className="text-white fill-white ml-1" />
             </div>
@@ -116,6 +145,7 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
         {/* ── Actions ────────────────────────────────────────────────── */}
         <div className="flex items-center gap-2 pt-1 border-t border-border/40">
           <button
+            onClick={handleDownload}
             disabled={!video.video_url || isProcessing}
             className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-[11px] font-bold bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 transition-all"
           >
@@ -131,6 +161,28 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
           </button>
         </div>
       </div>
+
+      {/* ── Video Player Modal ────────────────────────────────────────── */}
+      {showPlayer && video.video_url && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-8 animate-in fade-in duration-300">
+
+          <div className="relative h-full max-h-[75vh] aspect-[9/12] rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300">
+            <video
+              src={video.video_url}
+              className="w-full h-full object-cover"
+              controls
+              autoPlay
+              loop
+            />
+          </div>
+          <button
+            onClick={() => setShowPlayer(false)}
+            className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all"
+          >
+            <X size={24} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

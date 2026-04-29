@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { generateVideoScript } from "@/lib/generate-script";
 import { generateVoiceover, generateCaptions } from "@/lib/deepgram";
 import { generateAllSceneImages } from "@/lib/generate-images";
+import { renderVideoLocally } from "@/lib/remotion-local";
 
 export const helloWorld = inngest.createFunction(
   { 
@@ -112,14 +113,13 @@ export const generateVideo = inngest.createFunction(
       return { imageUrls };
     });
 
-    // ── Step 6: Assemble video (placeholder — e.g. Remotion / Shotstack) ─
-    const assemblyData = await step.run("assemble-video", async () => {
-      // TODO: Combine images + audio + captions into final video
-      // Could use Remotion, Shotstack, or FFmpeg here
-      return {
-        videoUrl: null,
-        status: "images-ready",
-      };
+    // ── Step 6: Render Video Locally (Free Alternative to AWS) ──────────────
+    const videoUrl = await step.run("render-video-local", async () => {
+      return await renderVideoLocally({
+        images: imageData.imageUrls,
+        audioUrl: audioData.audioUrl,
+        captions: captionData.words,
+      }, seriesId, videoIndex);
     });
 
     // ── Step 7: Update record with all generated assets ──────────────────
@@ -143,7 +143,7 @@ export const generateVideo = inngest.createFunction(
           srt_content: captionData.srt,
           transcript: captionData.transcript,
           image_urls: imageData.imageUrls,
-          video_url: assemblyData.videoUrl,
+          video_url: videoUrl,
           status: "completed",
         })
         .eq("id", initialVideo.id)
@@ -152,6 +152,37 @@ export const generateVideo = inngest.createFunction(
 
       if (error) throw new Error(`Failed to update video record: ${error.message}`);
       return data;
+    });
+
+    // ── Step 8: Send Email Notification ──────────────────────────────────────
+    await step.run("send-email-notification", async () => {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+
+      // Get user email and name
+      const { data: user, error: userError } = await supabase
+        .from("users")
+        .select("email, name")
+        .eq("id", userId)
+        .single();
+
+      if (userError || !user) {
+        console.error("Failed to fetch user for email notification", userError);
+        return null;
+      }
+
+      if (process.env.PLUNK_API_KEY) {
+        const { sendVideoNotificationEmail } = await import("@/lib/plunk");
+        await sendVideoNotificationEmail({
+          to: user.email,
+          name: user.name || "User",
+          videoTitle: scriptData.title,
+          videoUrl: videoUrl,
+          thumbnailUrl: imageData.imageUrls[0],
+        });
+      }
     });
 
     return {
