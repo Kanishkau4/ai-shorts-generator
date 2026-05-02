@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import {
   LayoutDashboard,
@@ -18,8 +18,10 @@ import {
   Sun,
   Moon
 } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
+import { createClient } from "@/utils/supabase/client";
+import { UpgradeDialog } from "@/components/billing/UpgradeDialog";
 
 const sidebarLinks = [
   { name: "Series", href: "/dashboard", icon: LayoutDashboard },
@@ -42,12 +44,56 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const { user } = useUser();
+  const { has } = useAuth();
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false);
+  const [isCheckingLimit, setIsCheckingLimit] = useState(false);
+  const supabase = createClient();
+  const router = useRouter();
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleCreateNewSeries = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    if (!user) return;
+
+    // Check if user has Pro feature via Clerk Entitlements
+    // 'feature:unlimited-series' is an example permission you might set in Clerk
+    const hasUnlimitedAccess = has?.({ permission: "feature:unlimited-series" });
+    
+    if (hasUnlimitedAccess) {
+      router.push("/dashboard/create");
+      return;
+    }
+
+    // Fallback: Check Supabase for series count if no Clerk entitlement is found
+    try {
+      setIsCheckingLimit(true);
+      const { count, error } = await supabase
+        .from("video_series")
+        .select("*", { count: 'exact', head: true })
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      // Free plan limit: 1 series
+      if (count && count >= 1) {
+        setIsUpgradeDialogOpen(true);
+      } else {
+        router.push("/dashboard/create");
+      }
+    } catch (error) {
+      console.error("Error checking series limit:", error);
+      // If error, allow creation to not block user, or show dialog as safe default
+      router.push("/dashboard/create");
+    } finally {
+      setIsCheckingLimit(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -94,13 +140,18 @@ export default function DashboardLayout({
         {/* Sidebar Desktop */}
         <aside className="hidden md:flex w-64 flex-col border-r border-border/40 bg-background/50">
           <div className="p-4">
-            <Link
-              href="/dashboard/create"
-              className="w-full flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 py-2.5 px-4 rounded-xl font-medium transition-all active:scale-[0.98]"
+            <button
+              onClick={handleCreateNewSeries}
+              disabled={isCheckingLimit}
+              className="w-full flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 py-2.5 px-4 rounded-xl font-medium transition-all active:scale-[0.98]"
             >
-              <Plus size={18} />
+              {isCheckingLimit ? (
+                <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" />
+              ) : (
+                <Plus size={18} />
+              )}
               Create New Series
-            </Link>
+            </button>
           </div>
 
           <div className="flex-1 overflow-y-auto py-2">
@@ -157,14 +208,21 @@ export default function DashboardLayout({
             />
             <aside className="fixed inset-y-0 left-0 z-40 w-64 border-r border-border/40 bg-background shadow-2xl animate-in slide-in-from-left-full duration-300 flex flex-col">
               <div className="p-4 mt-16">
-                <Link
-                  href="/dashboard/create"
-                  onClick={() => setIsMobileSidebarOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 py-2.5 px-4 rounded-xl font-medium transition-all active:scale-[0.98]"
+                <button
+                  onClick={(e) => {
+                    setIsMobileSidebarOpen(false);
+                    handleCreateNewSeries(e);
+                  }}
+                  disabled={isCheckingLimit}
+                  className="w-full flex items-center justify-center gap-2 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 py-2.5 px-4 rounded-xl font-medium transition-all active:scale-[0.98]"
                 >
-                  <Plus size={18} />
+                  {isCheckingLimit ? (
+                    <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" />
+                  ) : (
+                    <Plus size={18} />
+                  )}
                   Create New Series
-                </Link>
+                </button>
               </div>
 
               <div className="flex-1 overflow-y-auto py-2">
@@ -221,6 +279,11 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
+
+      <UpgradeDialog 
+        isOpen={isUpgradeDialogOpen} 
+        onOpenChange={setIsUpgradeDialogOpen} 
+      />
     </div>
   );
 }
