@@ -75,5 +75,24 @@ export async function POST(req: Request) {
     }
   }
 
+  if (eventType === 'subscription.created') {
+    const { data } = evt
+    // @ts-ignore - Clerk Billing types might be missing in some SDK versions
+    const userEmail = data.user_email || data.customer?.email
+    // @ts-ignore
+    const userName = data.user_name || data.customer?.name || "there"
+    // @ts-ignore
+    const planName = data.plan?.name || "Pro"
+
+    if (userEmail) {
+      const { sendSubscriptionNotificationEmail } = await import('@/lib/plunk')
+      await sendSubscriptionNotificationEmail({
+        to: userEmail,
+        name: userName,
+        planName: planName
+      }).catch(err => console.error("Error sending subscription email:", err))
+    }
+  }
+
   return new Response('', { status: 200 })
 }

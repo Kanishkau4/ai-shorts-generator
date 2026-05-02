@@ -119,13 +119,18 @@ export default function DashboardPage() {
   };
 
   const handleGenerateVideo = async (s: VideoSeries) => {
-    // TODO: call video generation API
-    console.log("Generate video for series:", s.id);
+    const res = await fetch(`/api/series/${s.id}/generate`, { method: "POST" });
+    if (!res.ok) {
+      const err = await res.json();
+      console.error("Failed to trigger video generation:", err);
+    } else {
+      console.log("Video generation started for series:", s.id);
+      router.push("/dashboard/videos");
+    }
   };
 
   const handleViewVideos = (s: VideoSeries) => {
-    // TODO: navigate to videos page filtered by series
-    console.log("View videos for series:", s.id);
+    router.push(`/dashboard/videos?seriesId=${s.id}`);
   };
 
   return (

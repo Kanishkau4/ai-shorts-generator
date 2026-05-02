@@ -36,7 +36,7 @@ export type VideoSeries = {
 
 // ─── Niche → gradient / emoji map ───────────────────────────────────────────
 
-const NICHE_META: Record<string, { emoji: string; gradient: string }> = {
+export const NICHE_META: Record<string, { emoji: string; gradient: string }> = {
   "scary-stories":  { emoji: "👻", gradient: "from-violet-900 via-slate-900 to-zinc-900" },
   motivation:       { emoji: "🔥", gradient: "from-orange-600 via-red-700 to-rose-900" },
   "did-you-know":   { emoji: "🤯", gradient: "from-cyan-700 via-sky-800 to-indigo-900" },
@@ -51,7 +51,7 @@ const NICHE_META: Record<string, { emoji: string; gradient: string }> = {
   technology:       { emoji: "🤖", gradient: "from-blue-600 via-indigo-800 to-violet-900" },
 };
 
-function getNicheMeta(niche: string) {
+export function getNicheMeta(niche: string) {
   return NICHE_META[niche] ?? { emoji: "🎬", gradient: "from-slate-700 via-slate-800 to-zinc-900" };
 }
 
@@ -262,6 +262,29 @@ export function SeriesCard({
     }
   };
 
+  const handleTestSchedule = async () => {
+    try {
+      setIsGenerating(true);
+      const res = await fetch("/api/series/test-schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          seriesId: series.id,
+          publishTime: series.publish_time,
+          platforms: series.platforms,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to start test schedule");
+      // Optional: add a toast notification here if you have a toast library
+      alert("Test schedule workflow started in the background!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to start test schedule");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <>
       {confirmDelete && (
@@ -390,6 +413,16 @@ export function SeriesCard({
                   {isPending ? "Resume to Generate" : "Generate Video"}
                 </>
               )}
+            </button>
+
+            {/* Test Schedule workflow */}
+            <button
+              onClick={handleTestSchedule}
+              disabled={isGenerating || isPending}
+              className="flex items-center justify-center gap-2 w-full px-3 py-2.5 rounded-xl text-xs font-bold border border-border/50 text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-all duration-200"
+            >
+              <Clock size={13} />
+              Test Schedule Workflow
             </button>
           </div>
         </div>
