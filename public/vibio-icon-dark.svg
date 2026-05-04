@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Outer rounded square -->
+  <rect width="512" height="512" rx="64" ry="64" fill="#ffffff"/>
+  <!-- Inner rotated square -->
+  <rect
+    x="170.752"
+    y="170.752"
+    width="170.496"
+    height="170.496"
+    rx="20.45952"
+    ry="20.45952"
+    fill="#0a0a0a"
+    transform="rotate(45 256 256)"
+  />
+</svg>
