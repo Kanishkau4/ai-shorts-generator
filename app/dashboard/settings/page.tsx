@@ -31,7 +31,9 @@ const TikTokIcon = ({ size = 24 }: { size?: number }) => (
   </svg>
 );
 
-export default function SettingsPage() {
+import { Suspense } from "react";
+
+function SettingsContent() {
   const { user } = useUser();
   const { signOut } = useClerk();
   const supabase = createClient();
@@ -339,5 +341,13 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Loading settings...</div>}>
+      <SettingsContent />
+    </Suspense>
   );
 }
