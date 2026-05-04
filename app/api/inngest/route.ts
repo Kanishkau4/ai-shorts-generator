@@ -11,6 +11,9 @@ const handler = serve({
     scheduleDailyVideos,
     processScheduledVideo,
   ],
+  // Explicitly set the environment to avoid signing issues
+  env: process.env.NODE_ENV === "production" ? "production" : "development",
+  signingKey: process.env.INNGEST_SIGNING_KEY,
 });
 
 export const GET = handler.GET;
