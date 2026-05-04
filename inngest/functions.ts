@@ -113,13 +113,31 @@ export const generateVideo = inngest.createFunction(
       return { imageUrls };
     });
 
-    // ── Step 6: Render Video Locally (Free Alternative to AWS) ──────────────
-    const videoUrl = await step.run("render-video-local", async () => {
-      return await renderVideoLocally({
+    // ── Step 6: Render Video (Local for Dev, GitHub Actions for Prod) ────────
+    const renderResult = await step.run("render-video", async () => {
+      const inputProps = {
         images: imageData.imageUrls,
         audioUrl: audioData.audioUrl,
         captions: captionData.words,
-      }, seriesId, videoIndex);
+      };
+
+      // If we have GitHub credentials, we use the free GitHub Actions renderer
+      if (process.env.GH_PAT && process.env.GITHUB_REPO) {
+        console.log("[Renderer] Triggering GitHub Actions render...");
+        const { triggerGithubRender } = await import("@/lib/github-renderer");
+        await triggerGithubRender({
+          seriesId,
+          videoIndex,
+          videoId: initialVideo.id,
+          inputProps,
+        });
+        return { mode: "github", pending: true };
+      }
+
+      // Fallback to local rendering (works only in local dev environment)
+      console.log("[Renderer] Falling back to local rendering...");
+      const videoUrl = await renderVideoLocally(inputProps, seriesId, videoIndex);
+      return { mode: "local", videoUrl, pending: false };
     });
 
     // ── Step 7: Update record with all generated assets ──────────────────
@@ -129,23 +147,29 @@ export const generateVideo = inngest.createFunction(
         process.env.SUPABASE_SERVICE_ROLE_KEY!
       );
 
+      const updateData: any = {
+        title: scriptData.title,
+        description: scriptData.description,
+        hook: scriptData.hook,
+        hashtags: scriptData.hashtags,
+        scenes: scriptData.scenes,
+        audio_url: audioData.audioUrl,
+        audio_duration_seconds: audioData.durationEstimateSeconds,
+        captions: captionData.words,
+        srt_content: captionData.srt,
+        transcript: captionData.transcript,
+        image_urls: imageData.imageUrls,
+      };
+
+      // Only mark as completed if we rendered locally
+      if (!renderResult.pending && renderResult.videoUrl) {
+        updateData.video_url = renderResult.videoUrl;
+        updateData.status = "completed";
+      }
+
       const { data, error } = await supabase
         .from("generated_videos")
-        .update({
-          title: scriptData.title,
-          description: scriptData.description,
-          hook: scriptData.hook,
-          hashtags: scriptData.hashtags,
-          scenes: scriptData.scenes,
-          audio_url: audioData.audioUrl,
-          audio_duration_seconds: audioData.durationEstimateSeconds,
-          captions: captionData.words,
-          srt_content: captionData.srt,
-          transcript: captionData.transcript,
-          image_urls: imageData.imageUrls,
-          video_url: videoUrl,
-          status: "completed",
-        })
+        .update(updateData)
         .eq("id", initialVideo.id)
         .select()
         .single();

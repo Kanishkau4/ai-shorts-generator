@@ -166,7 +166,7 @@ export function VideoCard({ video, onDelete }: VideoCardProps) {
       {showPlayer && video.video_url && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-8 animate-in fade-in duration-300">
 
-          <div className="relative h-full max-h-[75vh] aspect-[9/12] rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300">
+          <div className="relative h-full max-h-[80vh] aspect-[9/16] rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300">
             <video
               src={video.video_url}
               className="w-full h-full object-cover"
