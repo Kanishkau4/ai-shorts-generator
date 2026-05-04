@@ -11,8 +11,6 @@ const handler = serve({
     scheduleDailyVideos,
     processScheduledVideo,
   ],
-  // Explicitly set the signing key to avoid signing issues
-  signingKey: process.env.INNGEST_SIGNING_KEY,
 });
 
 export const GET = handler.GET;
