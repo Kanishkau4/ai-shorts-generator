@@ -5,6 +5,10 @@ import { generateVoiceover, generateCaptions } from "@/lib/deepgram";
 import { generateAllSceneImages } from "@/lib/generate-images";
 import { renderVideoLocally } from "@/lib/remotion-local";
 
+type RenderResult =
+  | { mode: "github"; pending: true }
+  | { mode: "local"; videoUrl: string; pending: false };
+
 export const helloWorld = inngest.createFunction(
   {
     id: "hello-world",
@@ -114,7 +118,7 @@ export const generateVideo = inngest.createFunction(
     });
 
     // ── Step 6: Render Video (Local for Dev, GitHub Actions for Prod) ────────
-    const renderResult = await step.run("render-video", async () => {
+    const renderResult: RenderResult = await step.run("render-video", async () => {
       const inputProps = {
         images: imageData.imageUrls,
         audioUrl: audioData.audioUrl,
@@ -131,13 +135,13 @@ export const generateVideo = inngest.createFunction(
           videoId: initialVideo.id,
           inputProps,
         });
-        return { mode: "github", pending: true };
+        return { mode: "github", pending: true } as const;
       }
 
       // Fallback to local rendering (works only in local dev environment)
       console.log("[Renderer] Falling back to local rendering...");
       const videoUrl = await renderVideoLocally(inputProps, seriesId, videoIndex);
-      return { mode: "local", videoUrl, pending: false };
+      return { mode: "local", videoUrl, pending: false } as const;
     });
 
     // ── Step 7: Update record with all generated assets ──────────────────
@@ -162,10 +166,8 @@ export const generateVideo = inngest.createFunction(
       };
 
       // Only mark as completed if we rendered locally
-      // We use a type cast here to satisfy the Vercel build check
-      const result = renderResult as any;
-      if (!result.pending && result.videoUrl) {
-        updateData.video_url = result.videoUrl;
+      if (!renderResult.pending) {
+        updateData.video_url = renderResult.videoUrl;
         updateData.status = "completed";
       }
 
