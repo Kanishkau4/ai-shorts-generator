@@ -22,6 +22,19 @@ export const metadata: Metadata = {
   title: "Vibio: AI Shorts Generator and Scheduler",
   description:
     "Vibio is a Shorts Generator and Scheduler for Instagram, TikTok, YouTube Shorts and X.",
+  icons: {
+    icon: [
+      {
+        url: "/vibio-icon-light.svg",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/vibio-icon-dark.svg",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+    apple: "/vibio-icon-dark.svg",
+  },
 };
 
 import { ClerkProvider } from "@clerk/nextjs";
