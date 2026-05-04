@@ -1,4 +1,4 @@
-# Vibio - AI Shorts Generator & Scheduler
+# 🎬 Vibio - AI Shorts Generator & Scheduler
 
 Vibio is a fully automated, AI-powered platform for generating and scheduling short-form videos (Shorts, Reels, TikToks). It transforms simple text prompts or series concepts into highly engaging, fully-rendered videos complete with AI-generated scripts, AI voiceovers, dynamic background images, and animated captions.
 
@@ -6,25 +6,25 @@ Vibio is a fully automated, AI-powered platform for generating and scheduling sh
 
 ## ✨ Features
 
-- **Automated Video Pipeline**: From prompt to final `.mp4` without human intervention.
-- **Series Management**: Create recurring video series (e.g., "Daily Stoic Wisdom") that automatically generate videos on a schedule.
-- **AI Scripting**: Integrated with **Google Gemini** and **Groq** to generate viral-optimized scripts, hooks, and scene descriptions.
-- **AI Voiceovers**: High-quality, emotive text-to-speech powered by **Deepgram Aura**.
-- **Dynamic Assets**: Automatically generates context-aware background images for scenes.
-- **Programmatic Rendering**: Uses **Remotion** to stitch audio, images, and animated captions together into a polished video.
-- **"Free Forever" Architecture**: Designed to deploy the frontend on Vercel while offloading heavy video rendering to **GitHub Actions** for cost-free computing.
-- **Authentication & Billing**: Fully integrated with **Clerk** for auth and subscription management.
-- **Email Notifications**: Automated emails via **Plunk** when subscriptions are updated or videos finish generating.
+- **🤖 Automated Video Pipeline**: From prompt to final `.mp4` without human intervention.
+- **📅 Series Management**: Create recurring video series (e.g., "Daily Stoic Wisdom") that automatically generate videos on a schedule.
+- **🧠 AI Scripting**: Integrated with **Google Gemini** and **Groq** to generate viral-optimized scripts, hooks, and scene descriptions.
+- **🎙️ AI Voiceovers**: High-quality, emotive text-to-speech powered by **Deepgram Aura**.
+- **🖼️ Dynamic Assets**: Automatically generates context-aware background images for scenes.
+- **🎞️ Programmatic Rendering**: Uses **Remotion** to stitch audio, images, and animated captions together into a polished video.
+- **☁️ "Free Forever" Architecture**: Designed to deploy the frontend on Vercel while offloading heavy video rendering to **GitHub Actions** for cost-free computing.
+- **💳 Authentication & Billing**: Fully integrated with **Clerk** for auth and subscription management.
+- **📧 Email Notifications**: Automated emails via **Plunk** when subscriptions are updated or videos finish generating.
 
 ## 🛠 Tech Stack
 
-- **Framework**: Next.js (App Router)
-- **Styling**: Tailwind CSS, Radix UI, Framer Motion
-- **Database**: Supabase (PostgreSQL & Storage)
-- **Authentication**: Clerk
-- **Background Jobs**: Inngest (Event orchestration and Cron scheduling)
-- **Video Rendering**: Remotion (Local in dev, GitHub Actions in prod)
-- **AI/APIs**: Deepgram (TTS), Gemini (Text), Groq (Text)
+- **⚛️ Framework**: Next.js (App Router)
+- **🎨 Styling**: Tailwind CSS, Radix UI, Framer Motion
+- **🗄️ Database**: Supabase (PostgreSQL & Storage)
+- **🔐 Authentication**: Clerk
+- **⚙️ Background Jobs**: Inngest (Event orchestration and Cron scheduling)
+- **🎥 Video Rendering**: Remotion (Local in dev, GitHub Actions in prod)
+- **🧠 AI/APIs**: Deepgram (TTS), Gemini (Text), Groq (Text), Plunk (Email)
 
 ## 🚀 Local Development Setup
 
@@ -113,4 +113,4 @@ When a user requests a video in production, the Vercel-hosted Inngest function t
 
 ## 📝 License
 
-This project is licensed under the MIT License.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
