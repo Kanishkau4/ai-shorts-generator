@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { generateVideoScript } from "@/lib/generate-script";
 import { generateVoiceover, generateCaptions } from "@/lib/deepgram";
 import { generateAllSceneImages } from "@/lib/generate-images";
-import { renderVideoLocally } from "@/lib/remotion-local";
+// import { renderVideoLocally } from "@/lib/remotion-local"; // Removed static import to prevent Vercel crash
 
 export const helloWorld = inngest.createFunction(
   {
@@ -136,6 +136,7 @@ export const generateVideo = inngest.createFunction(
 
       // Fallback to local rendering (works only in local dev environment)
       console.log("[Renderer] Falling back to local rendering...");
+      const { renderVideoLocally } = await import("@/lib/remotion-local");
       const videoUrl = await renderVideoLocally(inputProps, seriesId, videoIndex);
       return { mode: "local", videoUrl, pending: false };
     });
