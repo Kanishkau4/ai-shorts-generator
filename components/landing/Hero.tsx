@@ -3,20 +3,24 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Wand2, Search } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 
 export function Hero() {
+  const { userId, isLoaded } = useAuth();
   return (
     <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden pt-40 md:pt-46">
       {/* Background Video with Cinematic Overlay */}
       <div className="absolute inset-0 z-0">
         <video
-          src="/videos/hero.webm"
           autoPlay
           muted
           loop
           playsInline
           className="w-full h-full object-cover scale-105 opacity-80 dark:opacity-60"
-        />
+        >
+          <source src="/videos/hero.webm" type="video/webm" />
+          <source src="/videos/hero-video.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-linear-to-b from-background/20 via-background/40 to-background" />
       </div>
 
@@ -36,7 +40,7 @@ export function Hero() {
             Vibio uses state-of-the-art AI to transform your ideas, long videos, or scripts into engaging shorts for social media.
           </p>
 
-          {/* AI Prompt Bar - Inspired by the search/input bars in references */}
+          {/* AI Prompt Bar */}
           <div className="max-w-xl bg-background/80 backdrop-blur-2xl border border-border/50 p-1.5 rounded-[2rem] flex items-center shadow-2xl animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-300">
             <div className="flex-1 flex items-center gap-3 px-4">
               <Wand2 className="text-primary" size={18} />
@@ -46,12 +50,22 @@ export function Hero() {
                 className="bg-transparent border-none outline-none w-full text-base placeholder:text-muted-foreground/50"
               />
             </div>
-            <Link href="/sign-up">
-              <button className="bg-foreground text-background px-6 py-3.5 rounded-full font-bold text-sm flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                Generate
-                <ArrowRight size={16} />
-              </button>
-            </Link>
+
+            {isLoaded && userId ? (
+              <Link href="/dashboard/create">
+                <button className="bg-primary text-primary-foreground px-6 py-3.5 rounded-full font-bold text-sm flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/20">
+                  Generate Now
+                  <ArrowRight size={16} />
+                </button>
+              </Link>
+            ) : (
+              <Link href="/sign-up">
+                <button className="bg-foreground text-background px-6 py-3.5 rounded-full font-bold text-sm flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                  Get Started
+                  <ArrowRight size={16} />
+                </button>
+              </Link>
+            )}
           </div>
 
           <div className="mt-12 flex items-center gap-8 animate-in fade-in duration-1000 delay-500">

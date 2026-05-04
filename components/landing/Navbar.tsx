@@ -44,16 +44,16 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-10 text-[13px] font-medium tracking-wide uppercase">
-          <Link href="#features" className="text-foreground/70 hover:text-foreground transition-colors">
+          <Link href="/#features" className="text-foreground/70 hover:text-foreground transition-colors">
             Product
           </Link>
-          <Link href="#solutions" className="text-foreground/70 hover:text-foreground transition-colors">
+          <Link href="/solutions" className="text-foreground/70 hover:text-foreground transition-colors">
             Solutions
           </Link>
-          <Link href="#pricing" className="text-foreground/70 hover:text-foreground transition-colors">
+          <Link href="/pricing" className="text-foreground/70 hover:text-foreground transition-colors">
             Pricing
           </Link>
-          <Link href="#docs" className="text-foreground/70 hover:text-foreground transition-colors">
+          <Link href="/docs" className="text-foreground/70 hover:text-foreground transition-colors">
             Docs
           </Link>
         </nav>
@@ -115,9 +115,10 @@ export function Navbar() {
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
         <div className="absolute top-24 left-6 right-6 bg-background/95 backdrop-blur-2xl border border-border/50 p-8 rounded-3xl flex flex-col gap-6 shadow-2xl md:hidden animate-in fade-in zoom-in-95 duration-300">
-          <Link href="#features" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Product</Link>
-          <Link href="#solutions" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Solutions</Link>
-          <Link href="#pricing" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Pricing</Link>
+          <Link href="/#features" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Product</Link>
+          <Link href="/solutions" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Solutions</Link>
+          <Link href="/pricing" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Pricing</Link>
+          <Link href="/docs" className="text-xl font-bold" onClick={() => setIsMobileMenuOpen(false)}>Docs</Link>
           
           {isLoaded && !userId && (
             <>
