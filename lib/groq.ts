@@ -60,7 +60,7 @@ Rules:
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
+      model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
     }),
@@ -74,7 +74,10 @@ Rules:
   const json = await response.json();
   const rawText: string = json.choices?.[0]?.message?.content ?? "";
 
-  const cleaned = rawText
+  // Strip <think>...</think> tags if they exist (common in "thinking" models)
+  const contentWithoutThink = rawText.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+
+  const cleaned = contentWithoutThink
     .replace(/^```json\s*/i, "")
     .replace(/^```\s*/i, "")
     .replace(/```\s*$/i, "")
