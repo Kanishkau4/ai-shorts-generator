@@ -203,8 +203,8 @@ export const generateVideo = inngest.createFunction(
 
         console.log(`[Email Notification] Sending email to ${user.email} using Plunk...`);
 
-        if (process.env.PLUNK_API_KEY) {
-          const { sendVideoNotificationEmail } = await import("@/lib/plunk");
+        if (process.env.RESEND_API_KEY) {
+          const { sendVideoNotificationEmail } = await import("@/lib/resend");
           const result = await sendVideoNotificationEmail({
             to: user.email,
             name: user.name || "User",
@@ -215,7 +215,7 @@ export const generateVideo = inngest.createFunction(
           return { success: true, result };
         }
 
-        return { skipped: true, reason: "PLUNK_API_KEY missing" };
+        return { skipped: true, reason: "RESEND_API_KEY missing" };
       });
     }
 
@@ -337,16 +337,17 @@ export const processScheduledVideo = inngest.createFunction(
 
       const publishResults: any = {};
 
-      if (platforms?.includes("email") && process.env.PLUNK_API_KEY) {
-        const { sendVideoNotificationEmail } = await import("@/lib/plunk");
-        publishResults.email = await sendVideoNotificationEmail({
-          to: user.email,
-          name: user.name || "User",
-          videoTitle: video.title || "Scheduled Video",
-          videoUrl: video.video_url || "",
-          thumbnailUrl: video.image_urls?.[0] || "",
-        });
-      }
+        if (process.env.RESEND_API_KEY) {
+          const { sendVideoNotificationEmail } = await import("@/lib/resend");
+          const result = await sendVideoNotificationEmail({
+            to: user.email,
+            name: user.name || "User",
+            videoTitle: video.title || "Scheduled Video",
+            videoUrl: video.video_url || "",
+            thumbnailUrl: video.image_urls?.[0] || "",
+          });
+          publishResults.email = await result;
+        }
 
       if (platforms?.includes("youtube")) {
         // Fetch refresh token from user_settings
