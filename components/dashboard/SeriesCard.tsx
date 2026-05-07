@@ -14,6 +14,7 @@ import {
   Loader2,
   AlertCircle,
 } from "lucide-react";
+import Image from "next/image";
 
 // ─── Type ───────────────────────────────────────────────────────────────────
 
@@ -53,6 +54,21 @@ export const NICHE_META: Record<string, { emoji: string; gradient: string }> = {
 
 export function getNicheMeta(niche: string) {
   return NICHE_META[niche] ?? { emoji: "🎬", gradient: "from-slate-700 via-slate-800 to-zinc-900" };
+}
+
+// ─── Style → image map ───────────────────────────────────────────────────────
+
+export const STYLE_IMAGES: Record<string, string> = {
+  realistic: "/video-style/realistic.jpeg",
+  cinematic: "/video-style/cinematic.jpeg",
+  anime: "/video-style/anime.jpeg",
+  "3d-render": "/video-style/3d-render.jpeg",
+  comic: "/video-style/comic.jpeg",
+  gta: "/video-style/gta.jpeg",
+};
+
+export function getStyleImage(style: string) {
+  return STYLE_IMAGES[style] ?? "/video-style/cinematic.jpeg";
 }
 
 function formatDate(iso: string) {
@@ -275,26 +291,26 @@ export function SeriesCard({
 
       <div className="group relative flex flex-col rounded-2xl border border-border/50 bg-card/80 overflow-hidden shadow-sm hover:shadow-lg hover:border-border/80 transition-all duration-300 backdrop-blur-sm">
         {/* ── Thumbnail ─────────────────────────────────────────────────── */}
-        <div className={`relative aspect-[9/14] w-full bg-gradient-to-b ${gradient} flex flex-col items-center justify-center overflow-hidden`}>
-          {/* Decorative noise overlay */}
-          <div className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-            }}
+        <div className={`relative aspect-[9/14] w-full bg-slate-900 flex flex-col items-center justify-center overflow-hidden`}>
+          {/* Style Background Image */}
+          <Image
+            src={getStyleImage(series.video_style)}
+            alt={series.video_style}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
           />
+
+          {/* Gradient overlay */}
+          <div className={`absolute inset-0 bg-gradient-to-b ${gradient} opacity-40`} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
           {/* Vertical short-video aspect ratio indicator bars */}
           <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-          {/* Main emoji */}
-          <span className="text-7xl drop-shadow-2xl select-none z-10 group-hover:scale-110 transition-transform duration-500">
-            {emoji}
-          </span>
-
           {/* Series name overlay at bottom */}
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent px-3 pt-8 pb-3 z-10">
-            <p className="text-white text-[11px] font-semibold uppercase tracking-widest opacity-70 truncate">
+          <div className="absolute inset-x-0 bottom-0 px-3 pt-8 pb-3 z-10">
+            <p className="text-white text-[11px] font-semibold uppercase tracking-widest opacity-90 truncate">
               {series.niche.replace(/-/g, " ")}
             </p>
           </div>
