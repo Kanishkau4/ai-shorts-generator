@@ -24,6 +24,10 @@ export async function generateSceneImage(
     if (provider === "huggingface") {
       console.log(`[generate-images] Using Hugging Face for scene ${sceneId}`);
       imageBuffer = await generateImageWithHuggingFace(imagePrompt);
+    } else if (provider === "cloudflare") {
+      console.log(`[generate-images] Using Cloudflare for scene ${sceneId}`);
+      const { generateImageWithCloudflare } = await import("./cloudflare-ai");
+      imageBuffer = await generateImageWithCloudflare(imagePrompt);
     } else {
       console.log(`[generate-images] Using Gemini for scene ${sceneId}`);
       const apiKey = process.env.GEMINI_API_KEY!;
@@ -50,11 +54,17 @@ export async function generateSceneImage(
 
       if (!response.ok) {
         const errText = await response.text();
-        const isRateLimit = response.status === 429 || errText.toLowerCase().includes("quota");
+        const isQuotaExceeded = response.status === 429 || errText.toLowerCase().includes("quota");
         
-        if (isRateLimit && process.env.HF_TOKEN) {
-          console.warn(`[generate-images] Gemini rate limited. Falling back to Hugging Face for scene ${sceneId}...`);
-          imageBuffer = await generateImageWithHuggingFace(imagePrompt);
+        if (isQuotaExceeded) {
+          if (process.env.HF_TOKEN) {
+            console.warn(`[generate-images] Gemini quota exceeded. Falling back to Hugging Face...`);
+            imageBuffer = await generateImageWithHuggingFace(imagePrompt);
+          } else {
+            console.warn(`[generate-images] Gemini quota exceeded. Falling back to Cloudflare (STABLE)...`);
+            const { generateImageWithCloudflare } = await import("./cloudflare-ai");
+            imageBuffer = await generateImageWithCloudflare(imagePrompt);
+          }
         } else {
           throw new Error(`Gemini image generation failed (${response.status}): ${errText}`);
         }
@@ -73,15 +83,13 @@ export async function generateSceneImage(
   } catch (error: any) {
     console.error(`[generate-images] Error in ${provider} for scene ${sceneId}:`, error.message);
     
-    // Final fallback attempt if Gemini failed and we haven't tried HF yet
-    if (provider === "gemini" && process.env.HF_TOKEN) {
-      try {
-        console.log(`[generate-images] Final fallback to Hugging Face for scene ${sceneId}`);
-        imageBuffer = await generateImageWithHuggingFace(imagePrompt);
-      } catch (fallbackError: any) {
-        throw error;
-      }
-    } else {
+    // Final STABLE fallback if everything else failed
+    try {
+      console.log(`[generate-images] Ultimate fallback to Cloudflare for scene ${sceneId}`);
+      const { generateImageWithCloudflare } = await import("./cloudflare-ai");
+      imageBuffer = await generateImageWithCloudflare(imagePrompt);
+    } catch (finalError: any) {
+      console.error("[generate-images] All providers failed, including Cloudflare fallback.");
       throw error;
     }
   }
