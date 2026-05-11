@@ -119,6 +119,7 @@ export const generateVideo = inngest.createFunction(
         images: imageData.imageUrls,
         audioUrl: audioData.audioUrl,
         captions: captionData.words,
+        captionStyle: series.caption_style || "hormozi",
       };
 
       // If we have GitHub credentials, we use the free GitHub Actions renderer

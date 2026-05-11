@@ -19,12 +19,14 @@ export type MainVideoProps = {
   images: string[];
   audioUrl: string;
   captions: WordCaption[];
+  captionStyle?: string;
 };
 
 export const MainVideo: React.FC<MainVideoProps> = ({
   images,
   audioUrl,
   captions,
+  captionStyle = "hormozi",
 }) => {
   const { fps, durationInFrames } = useVideoConfig();
 
@@ -49,7 +51,7 @@ export const MainVideo: React.FC<MainVideoProps> = ({
         );
       })}
 
-      <Captions captions={captions} />
+      <Captions captions={captions} styleId={captionStyle} />
     </AbsoluteFill>
   );
 };
@@ -89,7 +91,7 @@ const AnimatedImage: React.FC<{ src: string; index: number }> = ({ src, index })
   );
 };
 
-const Captions: React.FC<{ captions: WordCaption[] }> = ({ captions }) => {
+const Captions: React.FC<{ captions: WordCaption[]; styleId: string }> = ({ captions, styleId }) => {
   const { fps } = useVideoConfig();
   const frame = useCurrentFrame();
 
@@ -123,29 +125,85 @@ const Captions: React.FC<{ captions: WordCaption[] }> = ({ captions }) => {
     extrapolateRight: "clamp",
   });
 
+  // Base styles
+  let containerStyle: React.CSSProperties = {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: "100%", // Lower third
+  };
+
+  let textStyle: React.CSSProperties = {
+    fontFamily: "Inter, sans-serif",
+    fontSize: "80px",
+    fontWeight: "900",
+    textAlign: "center",
+    textTransform: "uppercase",
+    padding: "20px",
+    maxWidth: "90%",
+  };
+
+  // Apply Specific Styles
+  if (styleId === "hormozi") {
+    textStyle = {
+      ...textStyle,
+      color: "yellow",
+      WebkitTextStroke: "3px black",
+      textShadow: "4px 4px 0px black, 0px 0px 20px rgba(0,0,0,0.8)",
+      transform: `scale(${scale})`,
+    };
+  } else if (styleId === "minimalist") {
+    textStyle = {
+      ...textStyle,
+      fontSize: "60px",
+      fontWeight: "500",
+      color: "white",
+      textTransform: "none",
+      textShadow: "0px 2px 10px rgba(0,0,0,0.5)",
+      opacity: interpolate(progressIntoGroup, [0, 10], [0, 1]),
+    };
+  } else if (styleId === "neon") {
+    textStyle = {
+      ...textStyle,
+      fontSize: "70px",
+      color: "#00ffff",
+      fontStyle: "italic",
+      textShadow: "0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff",
+      transform: `scale(${scale})`,
+    };
+  } else if (styleId === "typewriter") {
+    textStyle = {
+      ...textStyle,
+      fontFamily: "monospace",
+      fontSize: "50px",
+      color: "white",
+      backgroundColor: "rgba(0,0,0,0.7)",
+      padding: "10px 20px",
+      borderRadius: "8px",
+      textTransform: "none",
+    };
+  } else if (styleId === "karaoke") {
+    textStyle = {
+      ...textStyle,
+      color: "white",
+      WebkitTextStroke: "2px black",
+    };
+    textStyle.transform = `scale(${scale})`;
+    textStyle.color = "yellow";
+  } else if (styleId === "boxed") {
+    textStyle = {
+      ...textStyle,
+      fontSize: "70px",
+      backgroundColor: "white",
+      color: "black",
+      padding: "15px 30px",
+      boxShadow: "10px 10px 0px black",
+      transform: `rotate(-2deg) scale(${scale})`,
+    };
+  }
+
   return (
-    <AbsoluteFill
-      style={{
-        justifyContent: "center",
-        alignItems: "center",
-        paddingTop: "100%", // Lower third
-      }}
-    >
-      <div
-        style={{
-          fontFamily: "Inter, sans-serif",
-          fontSize: "80px",
-          fontWeight: "900",
-          color: "yellow",
-          textAlign: "center",
-          WebkitTextStroke: "3px black",
-          textShadow: "4px 4px 0px black, 0px 0px 20px rgba(0,0,0,0.8)",
-          textTransform: "uppercase",
-          transform: `scale(${scale})`,
-          padding: "20px",
-          maxWidth: "80%",
-        }}
-      >
+    <AbsoluteFill style={containerStyle}>
+      <div style={textStyle}>
         {activeGroup.words}
       </div>
     </AbsoluteFill>
