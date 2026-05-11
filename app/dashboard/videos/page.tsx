@@ -54,8 +54,19 @@ function VideosContent() {
   }, [fetchVideos, videos.some(v => v.status === "processing")]);
 
   const handleDelete = async (id: string) => {
-    // TODO: implement delete API
-    setVideos(prev => prev.filter(v => v.id !== id));
+    if (!confirm("Are you sure you want to delete this video?")) return;
+
+    try {
+      const res = await fetch(`/api/videos?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete video");
+
+      setVideos((prev) => prev.filter((v) => v.id !== id));
+    } catch (err: any) {
+      alert(err.message || "Failed to delete video");
+    }
   };
 
   return (
